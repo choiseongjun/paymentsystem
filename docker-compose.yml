@@ -1,0 +1,22 @@
+services:
+  web1:
+    image: nginx:latest
+    ports:
+      - "8888:80"
+    depends_on:
+      - fluent-bit
+    command: [nginx-debug, '-g', 'daemon off;']
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: "localhost:24224"
+        fluentd-async-connect: "false"
+
+  fluent-bit:
+    image: fluent/fluent-bit
+    volumes:
+      - ./conf/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./conf/parsers.conf:/fluent-bit/etc/parsers.conf
+    ports:
+      - "24224:24224"
+      - "2020:2020"
