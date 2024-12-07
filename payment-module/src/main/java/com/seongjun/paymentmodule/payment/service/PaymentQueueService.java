@@ -1,5 +1,6 @@
 package com.seongjun.paymentmodule.payment.service;
 
+import com.seongjun.paymentmodule.common.config.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,13 @@ public class PaymentQueueService {
 
     private final ReactiveRedisTemplate<String, String> redisTemplate;
     private final ReactiveValueOperations<String, String> valueOps;
+    private final KafkaProducerService kafkaProducerService;
 
-    public PaymentQueueService(@Qualifier("myReactiveRedisTemplate") ReactiveRedisTemplate<String, String> redisTemplate) {
+
+    public PaymentQueueService(@Qualifier("myReactiveRedisTemplate") ReactiveRedisTemplate<String, String> redisTemplate, KafkaProducerService kafkaProducerService) {
         this.redisTemplate = redisTemplate;
         this.valueOps = redisTemplate.opsForValue(); // ReactiveValueOperations 생성
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public Mono<Long> enqueue(String requestId) {
@@ -48,12 +52,13 @@ public class PaymentQueueService {
                 .flatMapMany(size -> Flux.range(0, size.intValue()))
                 .flatMap(i -> dequeue()
                         .flatMap(userId -> {
-                            // 유저 처리 로직 삽입
-                            log.info("Processed user: " + userId);
+                            if (userId != null) {
+                                kafkaProducerService.sendMessage(userId); 
+                                log.info("Sent to Kafka: " + userId);
+                            }
                             return Mono.empty();
                         })
                 )
                 .then();
     }
-
 }

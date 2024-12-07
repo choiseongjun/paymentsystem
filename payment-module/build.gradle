@@ -31,6 +31,9 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.postgresql:postgresql' // 데이터베이스 (PostgreSQL 예시)
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 }
 

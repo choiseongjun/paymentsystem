@@ -20,13 +20,22 @@ public class PaymentController {
         this.paymentQueueService = paymentQueueService;
     }
 
-    @PostMapping("/queue")
-    public Mono<ResponseEntity<String>> enqueuePayment() {
-        String requestId = UUID.randomUUID().toString();
-        return paymentQueueService.enqueue(requestId)
-                .map(position -> ResponseEntity.ok("Your position in the queue: " + position));
+//    @PostMapping("/queue")
+//    public Mono<ResponseEntity<String>> enqueuePayment() {
+//        String requestId = UUID.randomUUID().toString();
+//        return paymentQueueService.enqueue(requestId)
+//                .map(position -> ResponseEntity.ok("Your position in the queue: " + position));
+//    }
+    @PostMapping("/enqueue")
+    public Mono<Map<String, Object>> enqueuePayment(@RequestParam String userId) {
+        return paymentQueueService.enqueue(userId)
+                .map(position -> Map.of("message", "User added to queue at position: " + position));
     }
-
+    @PostMapping("/process")
+    public Mono<Map<String, Object>> processAllUsers() {
+        return paymentQueueService.processAllUsers()
+                .then(Mono.just(Map.of("message", "All users processed and sent to Kafka")));
+    }
     @GetMapping("/queue/{requestId}")
     public Mono<ResponseEntity<String>> getQueueStatus(@PathVariable String requestId) {
         return paymentQueueService.getQueuePosition(requestId)
