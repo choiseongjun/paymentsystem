@@ -34,6 +34,7 @@ dependencies {
     implementation 'org.postgresql:postgresql' // 데이터베이스 (PostgreSQL 예시)
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
 }
 

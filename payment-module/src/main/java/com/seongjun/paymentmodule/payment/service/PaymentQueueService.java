@@ -53,7 +53,7 @@ public class PaymentQueueService {
                 .flatMap(i -> dequeue()
                         .flatMap(userId -> {
                             if (userId != null) {
-                                kafkaProducerService.sendMessage(userId); 
+                                kafkaProducerService.sendMessage(userId);
                                 log.info("Sent to Kafka: " + userId);
                             }
                             return Mono.empty();
